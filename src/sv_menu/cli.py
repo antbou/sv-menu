@@ -1,9 +1,9 @@
 import click
 from datetime import datetime, timedelta
-from typing import Any, Optional, Dict, List
-
+from typing import Optional
 from sv_menu.scraper import fetch_menus_for_days
 from sv_menu.ui import render_week_menu
+from sv_menu.types import WeekMenu
 
 
 @click.command()
@@ -13,30 +13,45 @@ from sv_menu.ui import render_week_menu
     required=False
 )
 def main(date: Optional[str]) -> None:
-    """Affiche le menu du jour ou de la semaine dans le terminal."""
-
+    """Displays today's or the week's menu in the terminal."""
     if date:
-        try:
-            date_obj = datetime.strptime(date, "%Y-%m-%d")
-        except ValueError:
-            raise click.ClickException("Format de date invalide. Utilise YYYY-MM-DD.")
-
-        menus = fetch_menus_for_days([date])
-        label = date_obj.strftime("%A").capitalize()
-        render_week_menu({label: menus[date]})
-
+        render_menu_for_date(date)
     else:
-        today = datetime.today()
-        monday = today - timedelta(days=today.weekday())  # Go back to Monday
+        render_menu_for_week()
 
-        dates = [(monday + timedelta(days=i)) for i in range(5)]
-        iso_dates = [d.strftime("%Y-%m-%d") for d in dates]
-        menus_by_date = fetch_menus_for_days(iso_dates)
-        click.echo(menus_by_date)
-        menus_by_day: Dict[str, List[Any]] = {
-            d.strftime("%A").capitalize(): menus_by_date[d.strftime("%Y-%m-%d")]
-            for d in dates
-        }
-        menus_by_day = {k: v for k, v in menus_by_day.items() if v}
 
-        render_week_menu(menus_by_day)
+def render_menu_for_date(date_str: str) -> None:
+    """Fetch and render the menu for a specific date."""
+    try:
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        raise click.ClickException("Format de date invalide. Utilise YYYY-MM-DD.")
+
+    menus = fetch_menus_for_days([date_str])
+    label = date_obj.strftime("%A").capitalize()  # e.g., "Monday"
+    typed = menus.get(date_str, [])
+
+    render_week_menu({label: typed})
+
+
+def render_menu_for_week() -> None:
+    """Fetch and render the menu for the current work week (Monday to Friday)."""
+    today = datetime.today()
+    monday = today - timedelta(days=today.weekday())  # Get Monday of current week
+
+    # Generate list of dates from Monday to Friday
+    week_dates = [(monday + timedelta(days=i)) for i in range(5)]
+    iso_dates = [d.strftime("%Y-%m-%d") for d in week_dates]
+
+    menus_by_date = fetch_menus_for_days(iso_dates)
+
+    # Map ISO date to day name
+    menus_by_day: WeekMenu = {
+    d.strftime("%A").capitalize(): menus_by_date.get(d.strftime("%Y-%m-%d"), [])
+    for d in week_dates
+}
+
+    # Remove empty days (e.g., holidays or closed)
+    menus_by_day = {k: v for k, v in menus_by_day.items() if v}
+
+    render_week_menu(menus_by_day)
