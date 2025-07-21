@@ -6,9 +6,12 @@ authors = [
     {name = "antho",email = "bouillant.anthony@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
-    "click (>=8.2.1,<9.0.0)"
+    "click (>=8.2.1,<9.0.0)",
+    "requests (>=2.32.4,<3.0.0)",
+    "beautifulsoup4 (>=4.13.4,<5.0.0)",
+    "playwright (>=1.53.0,<2.0.0)"
 ]
 
 [tool.poetry]
@@ -19,6 +22,6 @@ packages = [{include = "sv_menu", from = "src"}]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[poetry.scripts]
-sv-menu = "sv_menu.sv_menu:main"
+[project.scripts]
+sv-menu = "sv_menu.cli:main"
 
