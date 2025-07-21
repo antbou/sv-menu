@@ -35,7 +35,7 @@ def _render_day_header(day: str) -> None:
 def _render_category(cat: CategoryBlock) -> None:
     name = cat.get("category", "Sans titre")
     icon = CATEGORY_ICONS.get(name, DEFAULT_ICON)
-    click.echo(click.style(f"\n{icon} {name}", bold=True))
+    click.echo(click.style(f"{icon} {name}", bold=True))
 
     for product in cat.get("products", []):
         _render_product(product)
