@@ -1,12 +1,25 @@
-from typing import TypedDict, List, Dict
+from sqlite3 import Date
+from typing import Dict, TypedDict, List
 
-class Product(TypedDict):
-    name: str
-    desc: str
-    prices: List[str]
+class Category(TypedDict):
+    type: str
+    title: str
+    description: str
+    priceInt: int
+    priceExt: int
 
-class CategoryBlock(TypedDict):
-    category: str
-    products: List[Product]
+class Menu(TypedDict):
+    id: str
+    date: Date
+    isHoliday: bool
+    categories: List[Category]
 
-WeekMenu = Dict[str, List[CategoryBlock]]
+Menus = List[Menu]
+
+CATEGORY_ICONS: Dict[str, str] = {
+    "Jardin": "🥦",
+    "Menu": "🥩",
+    "Marché": "🛒",
+    "Soupe du jour": "🥣",
+    "Sans titre": "🍽",
+}
