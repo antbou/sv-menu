@@ -31,7 +31,7 @@ Make sure you have [Poetry](https://python-poetry.org/) installed.
 ```bash
 poetry install
 poetry run sv-menu            # Displays week's menu
-poetry run sv-menu --date 2025-07-22   # Displays a specific day
+poetry run sv-menu --day 2025-07-22   # Displays a specific day
 ```
 
 ---
