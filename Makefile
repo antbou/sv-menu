@@ -1,18 +1,19 @@
-DC=docker/docker-compose.yml
-
-.PHONY: run run-args build clean shell
+.PHONY: run requirements build shiv ci clean
 
 run:
-	docker-compose -f $(DC) run --rm svmenu
+	poetry run sv-menu
 
 run-args:
-	docker-compose -f $(DC) run --rm svmenu $(ARGS)
+	poetry run sv-menu $(ARGS)
 
-build:
-	docker-compose -f $(DC) build
+requirements:
+	poetry export -f requirements.txt --output requirements.txt --without-hashes
+
+shiv:
+	shiv -c sv-menu -o sv-menu.pyz -r requirements.txt .
+
+ci:
+	act -j build -e .github/workflows/push-tag.json
 
 clean:
-	docker-compose -f $(DC) down --rmi all --volumes --remove-orphans
-
-shell:
-	docker-compose -f $(DC) run --rm svmenu /bin/bash
+	rm -f sv-menu.pyz requirements.txt
