@@ -1,7 +1,7 @@
 import requests
 from sv_menu.types import Menu
 
-ENDPOINT_URL = "https://svm-o453.onrender.com/v1/api/menus"
+ENDPOINT_URL = "https://svm-menu.fly.dev/v1/api/menus"
 
 def fetch_menus() -> list[Menu]:
     """Fetch menus from the API."""
