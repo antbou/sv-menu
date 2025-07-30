@@ -1,0 +1,44 @@
+name: Build and Release sv-menu.pyz
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.13
+
+      - name: Install Poetry
+        run: |
+          python -m pip install --upgrade pip
+          pip install "poetry>=1.8.0"
+
+      - name: Poetry version
+        run: poetry --version
+
+      - name: Configure Poetry and install dependencies
+        run: |
+          poetry config virtualenvs.create false
+          poetry install --no-root
+
+      - name: Install shiv
+        run: pip install shiv
+
+      - name: Build sv-menu.pyz
+        run: shiv -c sv-menu -o sv-menu.pyz -r requirements.txt .
+
+      - name: Create GitHub Release and upload sv-menu.pyz
+        uses: softprops/action-gh-release@v1
+        with:
+          files: sv-menu.pyz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
