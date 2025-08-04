@@ -27,6 +27,7 @@ Make sure you have Python 3.7+ installed, then run:
 ```bash
 python sv-menu.pyz            # Displays the week’s menu
 python sv-menu.pyz --day monday   # Displays menu for a specific day
+python sv-menu.pyz --no-cache     # Force fresh data, ignore cache
 ```
 
 ## 🛠️ For developers
@@ -56,6 +57,7 @@ Or with arguments:
 
 ```bash
 poetry run sv-menu --day monday
+poetry run sv-menu --no-cache
 ```
 
 ### Use Makefile commands
