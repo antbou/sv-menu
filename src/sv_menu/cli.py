@@ -4,7 +4,9 @@ from typing import Optional, List
 from sv_menu.client import fetch_menus
 from sv_menu.types import Menu
 from sv_menu.ui import render_week_menus
+from sv_menu.cache_service import MenuCacheService
 
+_cache = MenuCacheService()
 
 def print_header(day: Optional[str]) -> None:
     click.echo("Welcome to the SV Menu CLI!")
@@ -49,15 +51,23 @@ def filter_menus_by_day(menus: List[Menu], day: str) -> List[Menu]:
 
 @click.command()
 @click.option("--day", required=False, default=None, help="Day to display the menu for (optional).")
-def main(day: Optional[str] = None) -> None:
+@click.option("--no-cache", is_flag=True, default=False, help="Ignore cache and fetch fresh data.")
+def main(day: Optional[str] = None, no_cache: bool = False) -> None:
     """Displays week's menu in the terminal."""
     print_header(day)
 
-    menus = fetch_menus()
+    cached = _cache.load_cache()
+    if cached is not None and not no_cache:
+        click.echo(click.style("Using cached menus.", fg="yellow"))
+        menus = cached
+    else:
+        menus = fetch_menus()
+        if len(menus) >= 3:
+            _cache.save_cache(menus)
 
     if day:
         menus = filter_menus_by_day(menus, day)
-    
+
     if not menus:
         click.echo(click.style("No menus available for this week / day.", fg="red"))
         return
