@@ -5,8 +5,10 @@ import time
 from typing import Optional, List
 from sv_menu.types import Menu
 
+WEEK_IN_SECONDS = 60 * 60 * 24 * 7
+
 class MenuCacheService:
-    def __init__(self, cache_file: str = "menus_cache.json", ttl: int = 60 * 60 * 24 * 7):
+    def __init__(self, cache_file: str = "menus_cache.json", ttl: int = WEEK_IN_SECONDS):
         self.cache_file = cache_file
         self.ttl = ttl
 
