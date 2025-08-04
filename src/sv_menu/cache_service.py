@@ -28,5 +28,5 @@ class MenuCacheService:
         try:
             with open(self.cache_file, "w", encoding="utf-8") as f:
                 json.dump({"timestamp": time.time(), "menus": menus}, f)
-        except Exception:
+        except (OSError, TypeError):
             pass
