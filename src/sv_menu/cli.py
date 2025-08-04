@@ -62,7 +62,7 @@ def main(day: Optional[str] = None, no_cache: bool = False) -> None:
         menus = cached
     else:
         menus = fetch_menus()
-        if len(menus) >= 3:
+        if len(menus) >= MIN_MENUS_FOR_CACHE:
             _cache.save_cache(menus)
 
     if day:
