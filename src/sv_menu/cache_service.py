@@ -20,7 +20,7 @@ class MenuCacheService:
                 cache_time = cache.get("timestamp", 0)
                 if time.time() - cache_time < self.ttl and "menus" in cache:
                     return cache["menus"]
-            except Exception:
+            except (FileNotFoundError, json.JSONDecodeError, OSError):
                 pass
         return None
 
