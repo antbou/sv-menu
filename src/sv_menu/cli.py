@@ -7,6 +7,7 @@ from sv_menu.ui import render_week_menus
 from sv_menu.cache_service import MenuCacheService
 
 _cache = MenuCacheService()
+MIN_MENUS_FOR_CACHE = 3
 
 def print_header(day: Optional[str]) -> None:
     click.echo("Welcome to the SV Menu CLI!")
