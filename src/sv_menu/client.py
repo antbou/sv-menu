@@ -1,3 +1,4 @@
+import certifi
 import requests
 from sv_menu.types import Menu
 
@@ -5,7 +6,7 @@ ENDPOINT_URL = "https://svm-menu.fly.dev/v1/api/menus"
 
 def fetch_menus() -> list[Menu]:
     """Fetch menus from the API."""
-    response = requests.get(ENDPOINT_URL)
+    response = requests.get(ENDPOINT_URL, headers={"Accept": "application/json"}, verify=certifi.where())
     if response.status_code == 200:
         return response.json()
     return []
