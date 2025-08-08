@@ -10,11 +10,20 @@ CACHE_EXPIRATION_TIME = 60 * 60 * 24 * 2
 MIN_MENUS_FOR_CACHE = 3
 FILE_NAME = "sv-menu_cache"
 DIR_NAME = ".cache"
+ERROR_LOG_FILE = Path.home() / DIR_NAME / "sv-menu_cache_errors.log"
 
 class MenuCacheService:
     def __init__(self, week_id: int):
         self.cache_file = Path.home() / DIR_NAME / f"{FILE_NAME}_{week_id}.json"
         self.ttl = CACHE_EXPIRATION_TIME
+
+    def _log_error(self, message: str) -> None:
+        try:
+            ERROR_LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
+            with open(ERROR_LOG_FILE, "a", encoding="utf-8") as logf:
+                logf.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {message}\n")
+        except Exception:
+            pass
 
     def load_cache(self) -> Optional[List[Menu]]:
         """Load cached menus if available and not expired."""
@@ -25,8 +34,8 @@ class MenuCacheService:
                 cache_time = cache.get("timestamp", 0)
                 if time.time() - cache_time < self.ttl and "menus" in cache:
                     return cache["menus"]
-            except (FileNotFoundError, json.JSONDecodeError, OSError):
-                pass
+            except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
+                self._log_error(f"Error loading cache: {e}")
         return None
     
     def clear_caches(self) -> None:
@@ -40,8 +49,8 @@ class MenuCacheService:
                 if file.name == self.cache_file.name:
                     continue
                 file.unlink()
-            except OSError:
-                pass
+            except OSError as e:
+                self._log_error(f"Error removing cache file {file}: {e}")
         
 
     def save_cache(self, menus: List[Menu]) -> None:
@@ -52,5 +61,5 @@ class MenuCacheService:
             self.cache_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.cache_file, "w", encoding="utf-8") as f:
                 json.dump({"timestamp": time.time(), "menus": menus}, f)
-        except (OSError, TypeError):
-            pass
+        except (OSError, TypeError) as e:
+            self._log_error(f"Error saving cache: {e}")
