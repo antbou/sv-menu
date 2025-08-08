@@ -5,7 +5,6 @@ import click
 from sv_menu.types import Menu
 from pathlib import Path
 
-
 CACHE_EXPIRATION_TIME = 60 * 60 * 24 * 2
 MIN_MENUS_FOR_CACHE = 3
 FILE_NAME = "sv-menu_cache"
@@ -42,7 +41,7 @@ class MenuCacheService:
         return []
     
     def clear_unused_cache(self) -> None:
-        """Clear all cache files."""
+        """Clear cache files from previous weeks."""
         path = self._cache_dir
         if not path.exists():
             return

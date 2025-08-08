@@ -9,8 +9,12 @@ from sv_menu.ui import MenuUI
 class MenuCLI:
 
     def __init__(self):
-        self._cache = MenuCacheService(week_id=datetime.date.today().isocalendar()[1])
+        self._cache = MenuCacheService(week_id=self._get_current_week_id())
         self._ui = MenuUI()
+        
+    def _get_current_week_id(self) -> int:
+        """Get the current ISO week number."""
+        return datetime.date.today().isocalendar()[1]
 
     def _print_header(self, day: Optional[str]) -> None:
         """Print the header for the CLI."""
@@ -61,7 +65,7 @@ class MenuCLI:
         self._cache.clear_unused_cache()
         if not refresh_cache:
             menus = self._cache.load_cache()
-        if menus == []:
+        if not menus:
             menus = fetch_menus()
             self._cache.save_cache(menus)
 
@@ -69,7 +73,7 @@ class MenuCLI:
         if day:
             menus = self._filter_menus_by_day(menus, day)
 
-        if menus == []:
+        if not menus:
             click.echo(click.style("No menus available for this week / day.", fg="red"))
             return
 
