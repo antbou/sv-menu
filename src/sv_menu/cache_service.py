@@ -1,6 +1,6 @@
 import json
 import time
-from typing import Optional, List
+from typing import List, Sequence
 import click
 from sv_menu.types import Menu
 from pathlib import Path
@@ -13,8 +13,10 @@ DIR_NAME = ".cache"
 ERROR_LOG_FILE = Path.home() / DIR_NAME / "sv-menu_cache_errors.log"
 
 class MenuCacheService:
+    _cache_dir = Path.home() / DIR_NAME
+
     def __init__(self, week_id: int):
-        self.cache_file = Path.home() / DIR_NAME / f"{FILE_NAME}_{week_id}.json"
+        self.cache_file = self._cache_dir / f"{FILE_NAME}_{week_id}.json"
         self.ttl = CACHE_EXPIRATION_TIME
 
     def _log_error(self, message: str) -> None:
@@ -25,7 +27,7 @@ class MenuCacheService:
         except Exception:
             pass
 
-    def load_cache(self) -> Optional[List[Menu]]:
+    def load_cache(self) -> List[Menu]:
         """Load cached menus if available and not expired."""
         if self.cache_file.exists():
             try:
@@ -33,27 +35,30 @@ class MenuCacheService:
                     cache = json.load(f)
                 cache_time = cache.get("timestamp", 0)
                 if time.time() - cache_time < self.ttl and "menus" in cache:
+                    click.echo(click.style("Using cached menus.", fg="yellow"))
                     return cache["menus"]
             except (FileNotFoundError, json.JSONDecodeError, OSError) as e:
                 self._log_error(f"Error loading cache: {e}")
-        return None
+        return []
     
-    def clear_caches(self) -> None:
-        """Clear all cache files."""
-        path = Path.home() / DIR_NAME
+    def clear_caches(self, all: bool = False) -> None:
+        """Clear all cache files. If 'all' is False, keep the current cache file."""
+        path = self._cache_dir
         if not path.exists():
             return
         for file in path.glob(f"{FILE_NAME}_*.json"):
             try:
-                click.echo(f"Removing cache file: {file.name}")
-                if file.name == self.cache_file.name:
+                if not all and file.name == self.cache_file.name:
                     continue
+                if file.name == self.cache_file.name:
+                    click.echo(click.style(f"Deleting current cache file: {file.name}", fg="yellow"))
+                    
                 file.unlink()
             except OSError as e:
                 self._log_error(f"Error removing cache file {file}: {e}")
         
 
-    def save_cache(self, menus: List[Menu]) -> None:
+    def save_cache(self, menus: Sequence[Menu]) -> None:
         """Save menus to cache if they meet the minimum requirement."""
         if not menus or len(menus) < MIN_MENUS_FOR_CACHE:
             return
