@@ -3,6 +3,7 @@ from sv_menu.types import CATEGORY_ICONS, Menu, Category
 
 class MenuUI:
     def render_week_menus(self, menus: list[Menu]) -> None:
+        """Render the menus for the week."""
         for menu in menus:
             date = menu.get("date", "Inconnu")
             click.echo(click.style(f"📅 {date}", fg="yellow", bold=True))
@@ -19,6 +20,7 @@ class MenuUI:
             click.echo("-" * 40)
 
     def _render_category(self, cat: Category) -> None:
+        """Render a single category."""
         name = cat.get("type", "Sans titre")
         icon = CATEGORY_ICONS.get(name, CATEGORY_ICONS["Sans titre"])
         click.echo(click.style(f"{icon} {name}", bold=True))
