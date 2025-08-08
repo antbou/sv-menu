@@ -7,10 +7,9 @@ from sv_menu.cache_service import MenuCacheService
 from sv_menu.ui import MenuUI
 
 class MenuCLI:
-    MIN_MENUS_FOR_CACHE = 3
 
     def __init__(self):
-        self._cache = MenuCacheService()
+        self._cache = MenuCacheService(week_id=datetime.date.today().isocalendar()[1])
         self._ui = MenuUI()
 
     def _print_header(self, day: Optional[str]) -> None:
@@ -54,14 +53,14 @@ class MenuCLI:
     def run(self, day: Optional[str] = None, no_cache: bool = False) -> None:
         self._print_header(day)
 
+        self._cache.clear_caches()
         cached = self._cache.load_cache()
         if cached is not None and not no_cache:
             click.echo(click.style("Using cached menus.", fg="yellow"))
             menus = cached
         else:
             menus = fetch_menus()
-            if len(menus) >= self.MIN_MENUS_FOR_CACHE:
-                self._cache.save_cache(menus)
+            self._cache.save_cache(menus)
 
         if day:
             menus = self._filter_menus_by_day(menus, day)
