@@ -41,19 +41,15 @@ class MenuCacheService:
                 self._log_error(f"Error loading cache: {e}")
         return []
     
-    def clear_caches(self, all: bool = False) -> None:
-        """Clear all cache files. If 'all' is False, keep the current cache file."""
+    def clear_unused_cache(self) -> None:
+        """Clear all cache files."""
         path = self._cache_dir
         if not path.exists():
             return
         for file in path.glob(f"{FILE_NAME}_*.json"):
             try:
-                if not all and file.name == self.cache_file.name:
-                    continue
-                if file.name == self.cache_file.name:
-                    click.echo(click.style(f"Deleting current cache file: {file.name}", fg="yellow"))
-                    
-                file.unlink()
+                if file.name != self.cache_file.name:
+                    file.unlink()
             except OSError as e:
                 self._log_error(f"Error removing cache file {file}: {e}")
         

@@ -53,23 +53,23 @@ class MenuCLI:
             return []
         return [menu for menu in menus if menu.get("date") == date.isoformat()]
 
-    def run(self, day: Optional[str] = None, no_cache: bool = False, clear_cache: bool = False) -> None:
+    def run(self, day: Optional[str] = None, refresh_cache: bool = False) -> None:
         """Run the CLI to display menus."""
         self._print_header(day)
         menus = []
-        
-        if not no_cache:
+
+        self._cache.clear_unused_cache()
+        if not refresh_cache:
             menus = self._cache.load_cache()
-        if menus == [] and (not clear_cache or no_cache):
+        if menus == []:
             menus = fetch_menus()
             self._cache.save_cache(menus)
-            
-        self._cache.clear_caches(all=clear_cache)
+
 
         if day:
             menus = self._filter_menus_by_day(menus, day)
 
-        if not menus:
+        if menus == []:
             click.echo(click.style("No menus available for this week / day.", fg="red"))
             return
 
@@ -78,9 +78,8 @@ class MenuCLI:
 
 @click.command()
 @click.option("--day", required=False, default=None, help="Day to display the menu for (optional).")
-@click.option("--no-cache", is_flag=True, default=False, help="Ignore cache and fetch fresh data (optional).")
-@click.option("--clear-cache", is_flag=True, default=False, help="Clear current cache file (optional).")
-def main(day: Optional[str] = None, no_cache: bool = False, clear_cache: bool = False) -> None:
+@click.option("--refresh-cache", is_flag=True, default=False, help="Refresh cache and fetch fresh data (optional).")
+def main(day: Optional[str] = None, refresh_cache: bool = False) -> None:
     """Displays week's menu in the terminal."""
     cli = MenuCLI()
-    cli.run(day=day, no_cache=no_cache, clear_cache=clear_cache)
+    cli.run(day=day, refresh_cache=refresh_cache)
