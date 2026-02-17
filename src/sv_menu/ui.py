@@ -1,12 +1,34 @@
 import click
+import datetime
 from sv_menu.types import CATEGORY_ICONS, Menu, Category
 
 class MenuUI:
+    # French weekday names
+    FRENCH_WEEKDAYS = {
+        0: "Lundi",
+        1: "Mardi",
+        2: "Mercredi",
+        3: "Jeudi",
+        4: "Vendredi",
+        5: "Samedi",
+        6: "Dimanche"
+    }
+
+    def _format_date_with_weekday(self, date_str: str) -> str:
+        """Format date string to include French weekday name."""
+        try:
+            date_obj = datetime.datetime.fromisoformat(date_str).date()
+            weekday_name = self.FRENCH_WEEKDAYS.get(date_obj.weekday(), "")
+            return f"{weekday_name} {date_str}"
+        except (ValueError, AttributeError):
+            return date_str
+
     def render_week_menus(self, menus: list[Menu]) -> None:
         """Render the menus for the week."""
         for menu in menus:
             date = menu.get("date", "Inconnu")
-            click.echo(click.style(f"📅 {date}", fg="yellow", bold=True))
+            formatted_date = self._format_date_with_weekday(date)
+            click.echo(click.style(f"📅 {formatted_date}", fg="yellow", bold=True))
 
             categories = menu.get("categories", [])
             if not categories or menu.get("isHoliday", False):
