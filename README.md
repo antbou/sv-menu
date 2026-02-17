@@ -89,18 +89,18 @@ poetry run sv-menu --no-cache
 ## 📅 Example Output
 
 ```text
-📅 Tuesday
+📅 Tuesday 2026-02-18
 🥦 Jardin
   Focaccia antipasti — Pesto de basilic Aubergines, courgettes et poivrons
-    💵 EXT CHF 13.30   INT CHF 7.50
+    💵 13.30 / 7.50
 ----------------------------------------
 🥩 Menu
   Escalope de porc Milanaise — Tagliatelle al dente Carottes rôties
-    💵 EXT CHF 13.30   INT CHF 7.50
+    💵 13.30 / 7.50
 ----------------------------------------
 🥣 Soupe du jour
   Soupe de petits pois — Et basilic
-    💵 EXT CHF 1.80   INT CHF 1.50
+    💵 1.80 / 1.50
 ```
 
 ## 📄 License
