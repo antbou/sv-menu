@@ -1,5 +1,5 @@
 import click
-import datetime
+from datetime import datetime
 from sv_menu.types import CATEGORY_ICONS, Menu, Category
 
 class MenuUI:
@@ -17,7 +17,7 @@ class MenuUI:
     def _format_date_with_weekday(self, date_str: str) -> str:
         """Format date string to include French weekday name."""
         try:
-            date_obj = datetime.datetime.fromisoformat(date_str).date()
+            date_obj = datetime.fromisoformat(date_str).date()
             weekday_name = self.FRENCH_WEEKDAYS.get(date_obj.weekday(), "")
             return f"{weekday_name} {date_str}"
         except (ValueError, AttributeError):
