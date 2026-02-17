@@ -89,7 +89,7 @@ poetry run sv-menu --no-cache
 ## 📅 Example Output
 
 ```text
-📅 Mardi 2026-02-18
+📅 Tuesday 2026-02-18
 🥦 Jardin
   Focaccia antipasti — Pesto de basilic Aubergines, courgettes et poivrons
     💵 13.30 / 7.50
